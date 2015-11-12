@@ -1,0 +1,8 @@
+{
+  "db_type"    : "mysql",
+  "db_host"    : "192.168.99.100",
+  "db_port"    : 3306,
+  "db_username": "root",
+  "db_password": "abc123",
+  "db_name"    : "test"
+}

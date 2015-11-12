@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('sequelize_example:server');
 var http = require('http');
+var db = require('../model/db');
 
 /**
  * Get port from environment and store in Express.
@@ -15,19 +16,35 @@ var http = require('http');
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
+// test db status
+db.sequelize.authenticate().then(function() {
+  console.log('Connection has been established successfully.');
+}).catch(function(err) {
+  console.log('Unable to connect to the database:', err.stack);
+});
 
-var server = http.createServer(app);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+var server = null;
+// start express server
+db.sequelize.sync().then(function(err) {
+  /**
+   * Create HTTP server.
+   */
+  server = http.createServer(app);
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+  /**
+   * Listen on provided port, on all network interfaces.
+   */
+
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+
+}).catch(function(err) {
+
+  console.log('[ERROR] Fail to start server ', err.stack);
+
+});
 
 /**
  * Normalize a port into a number, string, or false.
