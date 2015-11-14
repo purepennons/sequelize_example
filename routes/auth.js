@@ -18,7 +18,7 @@ router.post('/login', function(req, res, next) {
     req.session.auth = true;
 
     // 轉址到登入完成畫面 (301 為轉址的 status code)
-    res.redirect(301, '/');
+    res.redirect(301, '/users/' + req.body.username);
   } else {
     // res.json({
     //   status: 'error',

@@ -55,14 +55,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use 會由上往下依序執行
 // 驗證是否已經登入的中間層 (middleware)
 function isLogin(req, res, next) {
+  console.log('Enter', req.path);
   console.log('Session', req.session);
-  if(req.session.auth) {
+
+  // 假設路徑為 /create 且為 POST 方法或已經登入，則 pass
+  // 排除特定路徑，可寫進 middleware 判斷
+  if(req.session.auth || (req.path === '/create' & req.method === 'POST')) {
     // 有登入，就往下執行，所以直接呼叫 next 方法就好
     next();
   } else {
     // session.auth 不存在或為否，則先設定 session.auth = false，之後直接導到登入畫面
-    // req.session.auth = false;
+    req.session.auth = false;
     console.log('redirect');
+    // next();
     res.redirect(301, '/auth/login');
   }
 }
@@ -72,10 +77,11 @@ function isLogin(req, res, next) {
  * routers 可以吃陣列，一次設定多個，而且可以寫正規表示式
  * 這邊要額外設定 /users 的原因是因為 express 判斷 /users/ 會 match 進入 middleware，但 /users 不 match
  */
-app.all(['/users', '/users/*'], isLogin);
+// app.use(['/users/*'], isLogin);
 
 app.use('/', routes);
-app.use('/users', users);
+// middleware 也可以直接插在中間
+app.use('/users', isLogin, users);
 app.use('/auth', auths);
 
 // catch 404 and forward to error handler
