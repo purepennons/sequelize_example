@@ -26,7 +26,8 @@ db.sequelize.authenticate().then(function() {
 
 var server = null;
 // start express server
-db.sequelize.sync({ force: true }).then(function(err) {
+// 若想強制改變 DB 結構，改成 db.sequelize.sync({ force: true })
+db.sequelize.sync().then(function(err) {
   /**
    * Create HTTP server.
    */
